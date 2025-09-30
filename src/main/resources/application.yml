@@ -1,0 +1,71 @@
+server:
+  port: ${SERVER_PORT:9091}
+
+spring:
+  application:
+    name: consulta-agendamento
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/consulta_agendamento}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:123456}
+    hikari:
+      maximum-pool-size: ${SPRING_DATASOURCE_MAX_POOL:10}
+      minimum-idle: ${SPRING_DATASOURCE_MIN_IDLE:2}
+      idle-timeout: ${SPRING_DATASOURCE_IDLE_TIMEOUT:600000}
+      max-lifetime: ${SPRING_DATASOURCE_MAX_LIFETIME:1800000}
+      pool-name: ConsultaAgendamentoPool
+  jpa:
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        default_schema: public
+        jdbc:
+          lob:
+            non_contextual_creation: true
+          time_zone: UTC
+    show-sql: false
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+  mvc:
+    problemdetails:
+      enabled: true
+  sql:
+    init:
+      platform: postgres
+      mode: never
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui
+    operations-sorter: method
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when_authorized
+
+security:
+  auth-service:
+    base-url: ${AUTH_SERVICE_URL:https://fcfa1f1b4877.ngrok-free.app}
+    token-validation-path: ${AUTH_SERVICE_TOKEN_PATH:/api/v1/auth/validate-token/}
+    method: ${AUTH_SERVICE_METHOD:POST}
+    timeout-ms: ${AUTH_SERVICE_TIMEOUT:5000}
+
+logging:
+  level:
+    root: INFO
+    org.springframework.security: INFO
+    br.edu.catolica.consulta_agendamento: DEBUG
