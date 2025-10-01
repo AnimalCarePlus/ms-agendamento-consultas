@@ -65,7 +65,10 @@ security:
   local-user:
     username: ${LOCAL_AUTH_USERNAME:admin}
     password: ${LOCAL_AUTH_PASSWORD:admin}
-
+  auth-service:
+    base-url: http://127.0.0.1:8000
+    token-validation-path: /api/v1/auth/validate-token/
+    method: GET
 logging:
   level:
     root: INFO
