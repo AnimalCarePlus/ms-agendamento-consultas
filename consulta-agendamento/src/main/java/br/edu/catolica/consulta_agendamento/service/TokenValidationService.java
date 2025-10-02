@@ -24,7 +24,7 @@ public class TokenValidationService {
 
     public TokenValidationService(
             RestTemplate restTemplate,
-            @Value("${security.auth-service.base-url:http://127.0.0.1:8000}") String baseUrl,
+            @Value("${security.auth-service.base-url:https://1736e818cd2a.ngrok-free.app}") String baseUrl,
             @Value("${security.auth-service.token-validation-path:/api/v1/auth/validate-token/}") String validationPath,
             @Value("${security.auth-service.method:POST}") String method) {
         this.restTemplate = restTemplate;
@@ -39,7 +39,7 @@ public class TokenValidationService {
         }
 
         try {
-            // 🔹 remove prefixo "Bearer " se vier no header
+
             String token = authorizationHeader.startsWith("Bearer ")
                     ? authorizationHeader.substring("Bearer ".length()).trim()
                     : authorizationHeader.trim();
@@ -49,7 +49,7 @@ public class TokenValidationService {
                     .toUriString();
 
             HttpHeaders headers = new HttpHeaders();
-            // 🔹 envia apenas o token puro
+
             headers.set(HttpHeaders.AUTHORIZATION, token);
             headers.setAccept(MediaType.parseMediaTypes("application/json"));
 
@@ -70,7 +70,7 @@ public class TokenValidationService {
                         return Optional.of(principal.toString());
                     }
                 }
-                return Optional.of(token); // fallback → devolve token puro
+                return Optional.of(token);
             }
         } catch (HttpStatusCodeException ex) {
             log.warn("Token validation rejected by auth service: {}", ex.getStatusCode());

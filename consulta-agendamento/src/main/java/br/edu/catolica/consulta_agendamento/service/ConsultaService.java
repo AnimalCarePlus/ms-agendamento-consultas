@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
+import br.edu.catolica.consulta_agendamento.client.AnimalClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,8 +34,14 @@ public class ConsultaService {
     private final ConsultaRepository consultaRepository;
     private final VeterinarioRepository veterinarioRepository;
     private final DisponibilidadeService disponibilidadeService;
+    private final AnimalClient animalClient;
 
     public ConsultaResponse agendar(ConsultaRequest request) {
+        boolean existe = animalClient.animalExiste(request.animalId());
+        if (!existe) {
+            throw new BusinessException("Animal não encontrado no serviço de animais");
+        }
+
         validarDataFutura(request.dataHora());
         Veterinario veterinario = obterVeterinario(request.veterinarioId());
         validarDisponibilidade(veterinario.getId(), request.dataHora(), null);
@@ -52,6 +59,11 @@ public class ConsultaService {
     }
 
     public ConsultaResponse atualizar(Long id, ConsultaRequest request) {
+        boolean existe = animalClient.animalExiste(request.animalId());
+        if (!existe) {
+            throw new BusinessException("Animal não encontrado no serviço de animais");
+        }
+
         Consulta consulta = obterConsulta(id);
         if (consulta.getStatus() == StatusConsulta.CANCELADA) {
             throw new BusinessException("Nao e possivel atualizar uma consulta cancelada");
@@ -112,6 +124,7 @@ public class ConsultaService {
         return disponibilidadeService.calcularDisponibilidade(veterinarioId, data);
     }
 
+
     private void validarDataFutura(LocalDateTime dataHora) {
         if (dataHora == null) {
             throw new BusinessException("A data e hora da consulta sao obrigatorias");
@@ -157,4 +170,3 @@ public class ConsultaService {
                 consulta.getAtualizadoEm());
     }
 }
-
